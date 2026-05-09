@@ -5,13 +5,10 @@ import {
   ResponsiveContainer, CartesianGrid,
 } from "recharts";
 
-// ─── CONSTANTS (BLACK THEME) ──────────────────────────────────────────────────
-const ACCENT = "#6366F1"; // Vibrant Indigo
-const BG = "#000000";     // True Black
-const CARD = "#121212";   // Deep Charcoal
-const BORDER = "#262626"; // Dark Border
-const TEXT_P = "#FFFFFF"; // Primary Text
-const TEXT_S = "#A3A3A3"; // Secondary Text
+// ─── CONSTANTS ────────────────────────────────────────────────────────────────
+const ACCENT = "#4F46E5";
+const BG = "#F5F5FF";
+const CARD = "#FFFFFF";
 
 const CLASSES = {
   Warrior: { icon: "⚔️", bonus: "str", desc: "Gym-focused · +2 STR" },
@@ -26,7 +23,7 @@ const RANKS = [
   { name: "Silver",   min: 20, color: "#64748b" },
   { name: "Gold",     min: 30, color: "#d97706" },
   { name: "Platinum", min: 40, color: "#06b6d4" },
-  { name: "Diamond",  min: 50, color: "#6366F1" },
+  { name: "Diamond",  min: 50, color: "#4F46E5" },
   { name: "Legend",   min: 75, color: "#7c3aed" },
 ];
 
@@ -34,7 +31,7 @@ const DAYS_S = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
 const DAYS_F = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
 const PILLARS = ["Fitness","Career","Relationships","Mindset"];
 const P_STAT  = { Fitness:"str", Career:"int", Relationships:"chm", Mindset:"foc" };
-const P_COLOR = { Fitness:"#ef4444", Career:"#6366F1", Relationships:"#ec4899", Mindset:"#8b5cf6" };
+const P_COLOR = { Fitness:"#ef4444", Career:"#4F46E5", Relationships:"#ec4899", Mindset:"#8b5cf6" };
 const S_LABEL = { str:"STR", int:"INT", chm:"CHM", foc:"FOC" };
 const S_FULL  = { str:"Strength", int:"Intelligence", chm:"Charisma", foc:"Focus" };
 const S_PILAR = { str:"Fitness", int:"Career", chm:"Relationships", foc:"Mindset" };
@@ -61,8 +58,8 @@ const getMult = (streak) => { if (streak >= 14) return 2.0; if (streak >= 7) ret
 const fmtTime = (s) => `${String(Math.floor(s / 60)).padStart(2,"0")}:${String(s % 60).padStart(2,"0")}`;
 
 // ─── STORAGE ──────────────────────────────────────────────────────────────────
-const KEY = "ascend_v3_dark";
-const loadData = () => { try { return JSON.parse(localStorage.getItem(KEY)) || null; } catch { return null; } };
+const KEY = "ascend_v3";
+const loadData = () => { try { const d = localStorage.getItem(KEY); return d ? JSON.parse(d) : null; } catch { return null; } };
 const saveData = (d) => { try { localStorage.setItem(KEY, JSON.stringify(d)); } catch {} };
 
 const mkChar = (name, cls) => ({
@@ -72,49 +69,47 @@ const mkChar = (name, cls) => ({
   totalXpEarned: 0, xpLog: [], lastReset: todayStr(),
 });
 
-// ─── GLOBAL STYLES (DARK MODE) ────────────────────────────────────────────────
+// ─── GLOBAL STYLES (Moved inside effect for reliability) ──────────────────────
 const GS = `
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap');
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
-body{background:#000000;font-family:'Outfit',sans-serif;color:#FFFFFF;}
+body{background:#e8e8f4;font-family:'Outfit',sans-serif; min-height: 100vh;}
 ::-webkit-scrollbar{width:0;}
 @keyframes floatXP{0%{transform:translateX(-50%) translateY(0);opacity:1}100%{transform:translateX(-50%) translateY(-64px);opacity:0}}
 @keyframes pop{0%{transform:scale(0.7);opacity:0}60%{transform:scale(1.06)}100%{transform:scale(1);opacity:1}}
 @keyframes slideUp{from{transform:translateY(24px);opacity:0}to{transform:translateY(0);opacity:1}}
 @keyframes checkBounce{0%{transform:scale(0)}60%{transform:scale(1.3)}100%{transform:scale(1)}}
-.card{background:#121212;border:1px solid #262626;border-radius:18px;}
+.card{background:#fff;border-radius:18px;box-shadow:0 2px 16px rgba(79,70,229,0.07);}
 .slide-up{animation:slideUp 0.3s ease both;}
 .pop{animation:pop 0.4s cubic-bezier(0.34,1.56,0.64,1) both;}
-.btn{border:none;border-radius:14px;padding:13px 20px;font-family:'Outfit',sans-serif;font-weight:700;font-size:14px;cursor:pointer;transition:all 0.18s;letter-spacing:0.2px;}
-.btn-p{background:#6366F1;color:white;width:100%;}
-.btn-p:hover{background:#4f46e5;}
-.btn-p:active{transform:scale(0.97);}
-.btn-p:disabled{background:#312e81;color:#6366f1;cursor:default;}
-.btn-g{background:#1a1a1a;border:1px solid #333;color:#a3a3a3;}
-.btn-g:hover{background:#262626;}
-.inp{width:100%;border:1px solid #333;border-radius:12px;padding:11px 14px;font-family:'Outfit',sans-serif;font-size:14px;outline:none;transition:border 0.2s;color:#FFFFFF;background:#000000;}
-.inp:focus{border-color:#6366F1;box-shadow:0 0 0 3px rgba(99,102,241,0.15);}
-select.inp{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23a3a3a3' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;}
+.btn{border:none;border-radius:14px;padding:13px 20px;font-family:'Outfit',sans-serif;font-weight:700;font-size:14px;cursor:pointer;transition:all 0.18s;}
+.btn-p{background:#4F46E5;color:white;width:100%;}
+.btn-p:disabled{background:#a5b4fc;}
+.btn-g{background:transparent;border:1.5px solid #e5e7eb;color:#374151;}
+.inp{width:100%;border:1.5px solid #e5e7eb;border-radius:12px;padding:11px 14px;font-family:'Outfit',sans-serif;font-size:14px;outline:none;background:white;}
 `;
 
 // ─── SUB-COMPONENTS ───────────────────────────────────────────────────────────
 function XPBar({ xp, max, color=ACCENT, h=8 }) {
   const pct = Math.min(100, max > 0 ? (xp / max) * 100 : 0);
   return (
-    <div style={{ background:"#1a1a1a", borderRadius:99, height:h, overflow:"hidden" }}>
+    <div style={{ background:"#e5e7eb", borderRadius:99, height:h, overflow:"hidden" }}>
       <div style={{ width:`${pct}%`, height:"100%", background:color, borderRadius:99, transition:"width 0.7s cubic-bezier(0.4,0,0.2,1)" }} />
     </div>
   );
 }
 
 function Modal({ title, onClose, children }) {
-  useEffect(() => { document.body.style.overflow = "hidden"; return () => { document.body.style.overflow = ""; }; }, []);
+  useEffect(() => { 
+    document.body.style.overflow = "hidden"; 
+    return () => { document.body.style.overflow = ""; }; 
+  }, []);
   return (
-    <div onClick={e => e.target===e.currentTarget && onClose()} style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.8)", zIndex:300, display:"flex", alignItems:"flex-end", justifyContent:"center", backdropFilter: "blur(4px)" }}>
-      <div className="slide-up" style={{ background:CARD, borderTop:`1px solid ${BORDER}`, borderRadius:"24px 24px 0 0", width:"100%", maxWidth:430, maxHeight:"88vh", overflowY:"auto", padding:"24px 20px 32px" }}>
+    <div onClick={e => e.target===e.currentTarget && onClose()} style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.45)", zIndex:300, display:"flex", alignItems:"flex-end", justifyContent:"center" }}>
+      <div className="slide-up" style={{ background:CARD, borderRadius:"24px 24px 0 0", width:"100%", maxWidth:430, maxHeight:"88vh", overflowY:"auto", padding:"24px 20px 32px" }}>
         <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:20 }}>
-          <h3 style={{ fontSize:18, fontWeight:800, color:TEXT_P }}>{title}</h3>
-          <button onClick={onClose} style={{ background:"#262626", border:"none", borderRadius:"50%", width:32, height:32, fontSize:18, cursor:"pointer", color:TEXT_S, display:"flex", alignItems:"center", justifyContent:"center" }}>×</button>
+          <h3 style={{ fontSize:18, fontWeight:800 }}>{title}</h3>
+          <button onClick={onClose} style={{ background:"#f3f4f6", border:"none", borderRadius:"50%", width:32, height:32, fontSize:18, cursor:"pointer", color:"#6b7280" }}>×</button>
         </div>
         {children}
       </div>
@@ -125,14 +120,13 @@ function Modal({ title, onClose, children }) {
 function LevelUpModal({ data, onClose }) {
   const rank = getRank(data.level);
   return (
-    <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.9)", zIndex:400, display:"flex", alignItems:"center", justifyContent:"center", padding:24 }}>
-      <div className="pop card" style={{ padding:36, textAlign:"center", maxWidth:300, width:"100%", borderColor: ACCENT }}>
-        <div style={{ fontSize:64, lineHeight:1 }}>🏆</div>
-        <h2 style={{ fontSize:15, fontWeight:700, color:TEXT_S, marginTop:12, letterSpacing:2, textTransform:"uppercase" }}>Level Up!</h2>
-        <div style={{ fontSize:72, fontWeight:900, color:ACCENT, lineHeight:1, margin:"8px 0" }}>{data.level}</div>
-        <div style={{ fontSize:20, fontWeight:700, color:rank.color, marginBottom:8 }}>{rank.name} Rank</div>
-        {data.quote && <p style={{ color:TEXT_S, fontStyle:"italic", fontSize:13, lineHeight:1.5, margin:"16px 0" }}>"{data.quote}"</p>}
-        <button className="btn btn-p" style={{ marginTop:8 }} onClick={onClose}>Keep Grinding →</button>
+    <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.75)", zIndex:400, display:"flex", alignItems:"center", justifyContent:"center", padding:24 }}>
+      <div className="pop card" style={{ padding:36, textAlign:"center", maxWidth:300, width:"100%" }}>
+        <div style={{ fontSize:64 }}>🏆</div>
+        <h2 style={{ fontSize:15, fontWeight:700, color:"#9ca3af", marginTop:12 }}>Level Up!</h2>
+        <div style={{ fontSize:72, fontWeight:900, color:ACCENT, lineHeight:1 }}>{data.level}</div>
+        <div style={{ fontSize:20, fontWeight:700, color:rank.color }}>{rank.name} Rank</div>
+        <button className="btn btn-p" style={{ marginTop:16 }} onClick={onClose}>Continue</button>
       </div>
     </div>
   );
@@ -144,900 +138,172 @@ function CharacterCreation({ onCreate }) {
   const [cls, setCls] = useState("Sage");
 
   return (
-    <div style={{ minHeight:"100vh", background:BG, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", padding:"24px 20px", fontFamily:"'Outfit',sans-serif" }}>
+    <div style={{ minHeight:"100vh", background:"linear-gradient(160deg,#f0f0ff 0%,#fafafa 100%)", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", padding:20 }}>
       <div style={{ marginBottom:12, fontSize:56 }}>⚔️</div>
-      <h1 style={{ fontSize:38, fontWeight:900, color:TEXT_P, letterSpacing:-1.5, marginBottom:4 }}>ASCEND</h1>
-      <p style={{ color:TEXT_S, marginBottom:36, fontSize:15, textAlign:"center" }}>Your life. Your quest. Level up for real.</p>
-
+      <h1 style={{ fontSize:38, fontWeight:900, marginBottom:4 }}>ASCEND</h1>
+      <p style={{ color:"#9ca3af", marginBottom:36 }}>Your life. Your quest. Level up.</p>
       <div style={{ width:"100%", maxWidth:390 }}>
-        <label style={{ fontSize:12, fontWeight:700, color:TEXT_S, letterSpacing:1, display:"block", marginBottom:8 }}>YOUR NAME, HERO</label>
-        <input className="inp" placeholder="Enter your name..." value={name} onChange={e=>setName(e.target.value)} style={{ marginBottom:28, fontSize:16 }} />
-
-        <label style={{ fontSize:12, fontWeight:700, color:TEXT_S, letterSpacing:1, display:"block", marginBottom:12 }}>CHOOSE YOUR CLASS</label>
-        <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12, marginBottom:36 }}>
+        <input className="inp" placeholder="Your name..." value={name} onChange={e=>setName(e.target.value)} style={{ marginBottom:20 }} />
+        <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12, marginBottom:24 }}>
           {Object.entries(CLASSES).map(([key, c]) => {
             const active = cls === key;
             return (
-              <div key={key} onClick={() => setCls(key)} style={{ background: active ? ACCENT : CARD, border:`2px solid ${active?ACCENT:BORDER}`, borderRadius:18, padding:"18px 14px", cursor:"pointer", textAlign:"center", transition:"all 0.2s" }}>
-                <div style={{ fontSize:30 }}>{c.icon}</div>
-                <div style={{ fontWeight:800, fontSize:14, color:active?"white":TEXT_P, marginTop:8 }}>{key}</div>
-                <div style={{ fontSize:11, color:active?"rgba(255,255,255,0.75)":TEXT_S, marginTop:4, lineHeight:1.4 }}>{c.desc}</div>
+              <div key={key} onClick={() => setCls(key)} style={{ background: active ? ACCENT : CARD, border:`2px solid ${active?ACCENT:"#e5e7eb"}`, borderRadius:18, padding:14, cursor:"pointer", textAlign:"center", color:active?"white":"#111" }}>
+                <div style={{ fontSize:24 }}>{c.icon}</div>
+                <div style={{ fontWeight:800, fontSize:13 }}>{key}</div>
               </div>
             );
           })}
         </div>
-
-        <button className="btn btn-p" disabled={!name.trim()} onClick={() => onCreate(mkChar(name.trim(), cls))} style={{ fontSize:16, padding:"15px 20px", letterSpacing:0.5 }}>
-          Begin Your Journey →
-        </button>
+        <button className="btn btn-p" disabled={!name.trim()} onClick={() => onCreate(mkChar(name.trim(), cls))}>Start Journey</button>
       </div>
     </div>
   );
 }
 
-// ─── HOME TAB ─────────────────────────────────────────────────────────────────
+// ─── TABS (Simplified for stability) ──────────────────────────────────────────
 function HomeTab({ appData, setAppData, awardXP }) {
   const { character, habits=[] } = appData;
   const [showAdd, setShowAdd] = useState(false);
-  const [editH, setEditH] = useState(null);
-  const todayIdx = todayDayIdx();
   const rank = getRank(character.level);
 
-  const todayHabits = habits.filter(h =>
-    h.frequency === "daily" || (h.days||[]).includes(todayIdx)
-  );
-  const doneCount = todayHabits.filter(h => h.lastCompleted === todayStr()).length;
-  const allDone = todayHabits.length > 0 && doneCount === todayHabits.length;
+  const todayHabits = habits.filter(h => h.frequency === "daily" || (h.days||[]).includes(todayDayIdx()));
 
   const checkHabit = (habit) => {
     if (habit.lastCompleted === todayStr()) return;
-    const prevStreak = habit.streak || 0;
-    const newStreak = habit.lastCompleted === yesterdayStr() ? prevStreak + 1 : 1;
-
+    const newStreak = habit.lastCompleted === yesterdayStr() ? (habit.streak||0) + 1 : 1;
     setAppData(prev => ({
       ...prev,
-      habits: prev.habits.map(h => h.id === habit.id ? {
-        ...h, lastCompleted: todayStr(), streak: newStreak,
-        bestStreak: Math.max(h.bestStreak||0, newStreak)
-      } : h)
+      habits: prev.habits.map(h => h.id === habit.id ? { ...h, lastCompleted: todayStr(), streak: newStreak } : h)
     }));
     awardXP(habit.xpValue || 20, habit.pillar || "Mindset", newStreak);
-
-    const remaining = todayHabits.filter(h => h.id!==habit.id && h.lastCompleted!==todayStr()).length;
-    if (remaining === 0 && todayHabits.length > 1) {
-      setTimeout(() => awardXP(100, "Mindset", 0), 800);
-    }
   };
-
-  const saveHabit = (h) => {
-    setAppData(prev => ({
-      ...prev,
-      habits: h.id && prev.habits.find(x=>x.id===h.id)
-        ? prev.habits.map(x=>x.id===h.id?h:x)
-        : [...prev.habits, { ...h, id:uid(), streak:0, bestStreak:0 }]
-    }));
-  };
-
-  const deleteHabit = (id) => setAppData(prev => ({ ...prev, habits: prev.habits.filter(h=>h.id!==id) }));
 
   return (
     <div style={{ padding:16 }}>
-      {/* Character Card */}
       <div className="card" style={{ padding:20, marginBottom:16 }}>
-        <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:16 }}>
-          <div style={{ display:"flex", alignItems:"center", gap:10 }}>
-            <div style={{ width:48, height:48, borderRadius:14, background:"#1a1a1a", display:"flex", alignItems:"center", justifyContent:"center", fontSize:24 }}>
-              {CLASSES[character.class].icon}
-            </div>
-            <div>
-              <div style={{ fontWeight:800, fontSize:18, color:TEXT_P }}>{character.name}</div>
-              <div style={{ fontSize:12, color:TEXT_S }}>{character.class} · <span style={{ color:rank.color, fontWeight:700 }}>{rank.name}</span></div>
-            </div>
+        <div style={{ display:"flex", justifyContent:"space-between", marginBottom:12 }}>
+          <div>
+            <div style={{ fontWeight:800, fontSize:18 }}>{character.name}</div>
+            <div style={{ fontSize:12, color:rank.color }}>{rank.name} Rank</div>
           </div>
-          <div style={{ textAlign:"right" }}>
-            <div style={{ fontSize:32, fontWeight:900, color:ACCENT, lineHeight:1 }}>Lv.{character.level}</div>
-          </div>
+          <div style={{ fontSize:24, fontWeight:900, color:ACCENT }}>Lv.{character.level}</div>
         </div>
-
-        <div style={{ marginBottom:6 }}>
-          <div style={{ display:"flex", justifyContent:"space-between", marginBottom:5 }}>
-            <span style={{ fontSize:11, color:TEXT_S, fontWeight:600, letterSpacing:0.5 }}>XP PROGRESS</span>
-            <span style={{ fontSize:11, fontWeight:700, color:ACCENT }}>{character.xp} / {xpForLevel(character.level)}</span>
-          </div>
-          <XPBar xp={character.xp} max={xpForLevel(character.level)} h={10} />
-        </div>
-
-        <div style={{ display:"flex", gap:0, marginTop:16, background:"#0a0a0a", border:`1px solid ${BORDER}`, borderRadius:14, overflow:"hidden" }}>
-          {Object.entries(S_LABEL).map(([key, label]) => (
-            <div key={key} style={{ flex:1, textAlign:"center", padding:"10px 4px", borderRight:`1px solid ${BORDER}` }}>
-              <div style={{ fontSize:10, fontWeight:800, color:P_COLOR[S_PILAR[key]], letterSpacing:0.5 }}>{label}</div>
-              <div style={{ fontSize:18, fontWeight:800, color:TEXT_P, marginTop:2 }}>{character.stats[key]}</div>
-            </div>
-          ))}
-        </div>
+        <XPBar xp={character.xp} max={xpForLevel(character.level)} h={10} />
       </div>
 
-      {/* Today's Habits */}
-      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:12 }}>
-        <h2 style={{ fontSize:16, fontWeight:800, color:TEXT_P }}>Today's Quests</h2>
-        <div style={{ display:"flex", gap:8, alignItems:"center" }}>
-          {allDone && (
-            <span style={{ fontSize:11, background:"#312e81", color:"#a5b4fc", borderRadius:8, padding:"3px 8px", fontWeight:700 }}>⭐ Perfect Day!</span>
-          )}
-          <span style={{ fontSize:13, color:TEXT_S, fontWeight:600 }}>{doneCount}/{todayHabits.length}</span>
-        </div>
-      </div>
-
-      {todayHabits.length === 0 ? (
-        <div className="card" style={{ padding:36, textAlign:"center" }}>
-          <div style={{ fontSize:36, marginBottom:10 }}>⚔️</div>
-          <p style={{ color:TEXT_S, fontSize:14, lineHeight:1.6 }}>No quests yet, hero.<br/>Add a habit to begin your journey.</p>
-        </div>
-      ) : (
-        todayHabits.map(habit => {
-          const done = habit.lastCompleted === todayStr();
-          return (
-            <div key={habit.id} className="card" style={{ padding:"14px 16px", marginBottom:10, display:"flex", alignItems:"center", gap:12, opacity:done?0.5:1 }}>
-              <button onClick={() => checkHabit(habit)} style={{ width:30, height:30, borderRadius:9, border:`2.5px solid ${done?ACCENT:"#333"}`, background:done?ACCENT:"transparent", display:"flex", alignItems:"center", justifyContent:"center", cursor:done?"default":"pointer", flexShrink:0 }}>
-                {done && <span style={{ color:"white", fontSize:14, animation:"checkBounce 0.3s ease" }}>✓</span>}
-              </button>
-              <div style={{ flex:1, minWidth:0 }}>
-                <div style={{ fontWeight:700, fontSize:15, color:done?TEXT_S:TEXT_P, display:"flex", alignItems:"center", gap:6 }}>
-                  <span>{habit.emoji}</span>
-                  <span style={{ overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{habit.name}</span>
-                </div>
-                <div style={{ fontSize:11, color:TEXT_S, marginTop:3, display:"flex", alignItems:"center", gap:6 }}>
-                  <span style={{ color:P_COLOR[habit.pillar], fontWeight:600 }}>●</span>
-                  <span>{habit.pillar} · +{habit.xpValue}XP</span>
-                  {(habit.streak||0) > 0 && <span style={{ color:"#f97316", fontWeight:600 }}>🔥 {habit.streak}d</span>}
-                </div>
-              </div>
-              <div style={{ display:"flex", gap:4 }}>
-                <button onClick={()=>setEditH(habit)} style={{ background:"none", border:"none", cursor:"pointer", fontSize:15, opacity:0.5 }}>✏️</button>
-                <button onClick={()=>deleteHabit(habit.id)} style={{ background:"none", border:"none", cursor:"pointer", fontSize:15, opacity:0.5 }}>🗑️</button>
-              </div>
+      <h2 style={{ fontSize:16, fontWeight:800, marginBottom:12 }}>Today's Quests</h2>
+      {todayHabits.map(h => {
+        const done = h.lastCompleted === todayStr();
+        return (
+          <div key={h.id} className="card" style={{ padding:14, marginBottom:10, display:"flex", alignItems:"center", gap:12, opacity:done?0.6:1 }}>
+            <button onClick={()=>checkHabit(h)} style={{ width:24, height:24, borderRadius:6, border:`2px solid ${done?ACCENT:"#d1d5db"}`, background:done?ACCENT:"transparent", color:"white" }}>{done?"✓":""}</button>
+            <div style={{ flex:1 }}>
+              <div style={{ fontWeight:700 }}>{h.emoji} {h.name}</div>
+              <div style={{ fontSize:11, color:"#9ca3af" }}>+{h.xpValue} XP</div>
             </div>
-          );
-        })
-      )}
-
-      <button className="btn btn-p" style={{ marginTop:12 }} onClick={()=>setShowAdd(true)}>+ Add Habit</button>
-
-      {(showAdd || editH) && (
-        <HabitModal habit={editH} onClose={()=>{setShowAdd(false);setEditH(null)}} onSave={h=>{saveHabit(h);setShowAdd(false);setEditH(null)}} />
-      )}
+          </div>
+        );
+      })}
+      <button className="btn btn-p" onClick={()=>setShowAdd(true)}>+ Add Habit</button>
+      {showAdd && <HabitModal onClose={()=>setShowAdd(false)} onSave={h=>{setAppData(p=>({...p,habits:[...p.habits,{...h,id:uid()}]}));setShowAdd(false)}} />}
     </div>
   );
 }
 
-function HabitModal({ habit, onClose, onSave }) {
-  const [f, setF] = useState(habit || { name:"", emoji:"⚡", pillar:"Mindset", xpValue:20, frequency:"daily", days:[] });
-  const s = (k,v) => setF(x=>({...x,[k]:v}));
-
+function HabitModal({ onClose, onSave }) {
+  const [f, setF] = useState({ name:"", emoji:"⚡", pillar:"Mindset", xpValue:20, frequency:"daily" });
   return (
-    <Modal title={habit?"Edit Habit":"New Habit"} onClose={onClose}>
-      <div style={{ display:"flex", flexWrap:"wrap", gap:6, marginBottom:16, background:"#000000", borderRadius:12, padding:10, border:`1px solid ${BORDER}` }}>
-        {EMOJIS.map(e => (
-          <button key={e} onClick={()=>s("emoji",e)} style={{ fontSize:20, background:f.emoji===e?"#262626":"transparent", border:"none", borderRadius:8, padding:"5px 8px", cursor:"pointer" }}>{e}</button>
-        ))}
-      </div>
-      <input className="inp" placeholder="Habit name..." value={f.name} onChange={e=>s("name",e.target.value)} style={{ marginBottom:12 }} />
-      <select className="inp" value={f.pillar} onChange={e=>s("pillar",e.target.value)} style={{ marginBottom:12 }}>
-        {PILLARS.map(p=><option key={p}>{p}</option>)}
-      </select>
-      <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12, marginBottom:12 }}>
-        <div>
-          <label style={{ fontSize:12, color:TEXT_S, fontWeight:600, display:"block", marginBottom:5 }}>XP Value</label>
-          <input className="inp" type="number" min={10} max={50} step={5} value={f.xpValue} onChange={e=>s("xpValue",+e.target.value)} />
-        </div>
-        <div>
-          <label style={{ fontSize:12, color:TEXT_S, fontWeight:600, display:"block", marginBottom:5 }}>Frequency</label>
-          <select className="inp" value={f.frequency} onChange={e=>s("frequency",e.target.value)}>
-            <option value="daily">Every day</option>
-            <option value="specific">Specific days</option>
-          </select>
-        </div>
-      </div>
-      {f.frequency==="specific" && (
-        <div style={{ display:"flex", gap:6, marginBottom:16, flexWrap:"wrap" }}>
-          {DAYS_S.map((d,i) => {
-            const on = (f.days||[]).includes(i);
-            return (
-              <button key={i} onClick={()=>s("days",on?(f.days||[]).filter(x=>x!==i):[...(f.days||[]),i])} style={{ padding:"7px 11px", borderRadius:10, border:`2px solid ${on?ACCENT:BORDER}`, background:on?"#1e1b4b":"#000", color:on?ACCENT:TEXT_S, fontWeight:700, fontSize:12, cursor:"pointer" }}>{d}</button>
-            );
-          })}
-        </div>
-      )}
-      <button className="btn btn-p" disabled={!f.name.trim()} onClick={()=>onSave(f)}>{habit?"Save Changes":"Add Habit"}</button>
+    <Modal title="New Habit" onClose={onClose}>
+      <input className="inp" placeholder="Name..." value={f.name} onChange={e=>setF({...f,name:e.target.value})} style={{ marginBottom:12 }} />
+      <button className="btn btn-p" onClick={()=>onSave(f)}>Add</button>
     </Modal>
   );
 }
 
-// ─── FITNESS TAB (DARK) ───────────────────────────────────────────────────────
-function FitnessTab({ appData, setAppData, awardXP }) {
-  const { workoutDays=[] } = appData;
-  const [showAdd, setShowAdd] = useState(false);
-  const [editD, setEditD] = useState(null);
-  const [expandId, setExpandId] = useState(null);
-  const todayIdx = todayDayIdx();
-
-  const markComplete = (day) => {
-    const t = todayStr();
-    if ((day.completedDates||[]).includes(t)) return;
-    const newStreak = day.lastCompleted === yesterdayStr() ? (day.streak||0)+1 : 1;
-    setAppData(prev => ({
-      ...prev,
-      workoutDays: prev.workoutDays.map(d => d.id===day.id ? { ...d, lastCompleted:t, streak:newStreak, completedDates:[...(d.completedDates||[]),t] } : d)
-    }));
-    awardXP(60, "Fitness", newStreak);
-  };
-
-  const saveDay = (day) => {
-    setAppData(prev => ({
-      ...prev,
-      workoutDays: day.id && prev.workoutDays.find(d=>d.id===day.id)
-        ? prev.workoutDays.map(d=>d.id===day.id?day:d)
-        : [...prev.workoutDays, { ...day, id:uid(), streak:0, completedDates:[] }]
-    }));
-  };
-
-  const deleteDay = (id) => setAppData(prev=>({...prev,workoutDays:prev.workoutDays.filter(d=>d.id!==id)}));
-
-  const weekCells = DAYS_S.map((label, i) => {
-    const day = workoutDays.find(w=>(w.days||[]).includes(i));
-    const done = day && (day.completedDates||[]).includes(todayStr());
-    return { label, i, day, done, isToday: i===todayIdx };
-  });
-
-  const weekDone = workoutDays.filter(d=>(d.completedDates||[]).includes(todayStr())).length;
-  const weekTotal = workoutDays.length;
+// ─── STATS TAB (Fixed height for charts) ──────────────────────────────────────
+function StatsTab({ appData }) {
+  const { character } = appData;
+  const radarData = [
+    { stat:"STR", val:character.stats.str },
+    { stat:"INT", val:character.stats.int },
+    { stat:"CHM", val:character.stats.chm },
+    { stat:"FOC", val:character.stats.foc },
+  ];
 
   return (
     <div style={{ padding:16 }}>
       <div className="card" style={{ padding:16, marginBottom:16 }}>
-        <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:12 }}>
-          <h2 style={{ fontSize:15, fontWeight:800, color:TEXT_P }}>This Week</h2>
-          <span style={{ fontSize:12, color:ACCENT, fontWeight:700 }}>{weekDone}/{weekTotal} done</span>
-        </div>
-        <div style={{ display:"flex", gap:5 }}>
-          {weekCells.map(({label,i,day,done,isToday}) => (
-            <div key={i} style={{ flex:1, textAlign:"center" }}>
-              <div style={{ fontSize:10, fontWeight:700, color:isToday?ACCENT:TEXT_S, marginBottom:5 }}>{label}</div>
-              <div style={{ height:36, borderRadius:10, background:done?"#065f46":day?"#854d0e":isToday?"#1e1b4b":"#1a1a1a", border:`2px solid ${isToday?ACCENT:"transparent"}`, color:done?"#34d399":day?"#fbbf24":TEXT_S, display:"flex", alignItems:"center", justifyContent:"center", fontSize:13 }}>
-                {done?"✓":day?"○":"–"}
-              </div>
-            </div>
-          ))}
+        <h3 style={{ fontSize:14, fontWeight:800, marginBottom:12 }}>Stat Radar</h3>
+        {/* CRITICAL: Parent height defined to prevent blank screen */}
+        <div style={{ height: "250px", width: "100%" }}>
+          <ResponsiveContainer width="100%" height="100%">
+            <RadarChart data={radarData}>
+              <PolarGrid />
+              <PolarAngleAxis dataKey="stat" />
+              <Radar dataKey="val" stroke={ACCENT} fill={ACCENT} fillOpacity={0.5} />
+            </RadarChart>
+          </ResponsiveContainer>
         </div>
       </div>
-
-      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:12 }}>
-        <h2 style={{ fontSize:16, fontWeight:800, color:TEXT_P }}>Workout Schedule</h2>
-        <button className="btn btn-g" style={{ fontSize:12, padding:"8px 14px", borderRadius:10 }} onClick={()=>setShowAdd(true)}>+ Add Day</button>
-      </div>
-
-      {workoutDays.length === 0 ? (
-        <div className="card" style={{ padding:36, textAlign:"center" }}>
-          <div style={{ fontSize:36, marginBottom:10 }}>💪</div>
-          <p style={{ color:TEXT_S, fontSize:14 }}>No workouts planned.<br/>Build your schedule, warrior.</p>
-        </div>
-      ) : (
-        DAYS_F.map((dayName, dayIdx) => {
-          const day = workoutDays.find(w=>(w.days||[]).includes(dayIdx));
-          if (!day) return null;
-          const done = (day.completedDates||[]).includes(todayStr());
-          const isToday = dayIdx===todayIdx;
-          const expanded = expandId===day.id;
-
-          return (
-            <div key={dayIdx} className="card" style={{ padding:16, marginBottom:10, borderLeft:`4px solid ${isToday?ACCENT:done?"#059669":BORDER}` }}>
-              <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start" }}>
-                <div style={{ cursor:"pointer", flex:1 }} onClick={()=>setExpandId(expanded?null:day.id)}>
-                  <div style={{ fontSize:12, color:TEXT_S, fontWeight:600, marginBottom:2 }}>{dayName.toUpperCase()}</div>
-                  <div style={{ fontWeight:800, fontSize:16, color:TEXT_P }}>{day.name}</div>
-                  {(day.streak||0)>0 && <div style={{ fontSize:11, color:"#f97316", fontWeight:600, marginTop:2 }}>🔥 {day.streak} week streak</div>}
-                  <div style={{ fontSize:12, color:TEXT_S, marginTop:2 }}>{(day.exercises||[]).length} exercises · {expanded?"▴ hide":"▾ view"}</div>
-                </div>
-                <div style={{ display:"flex", gap:5 }}>
-                  <button onClick={()=>setEditD(day)} style={{ background:"#262626", border:"none", borderRadius:8, padding:"6px 8px", cursor:"pointer", fontSize:14 }}>✏️</button>
-                  <button onClick={()=>deleteDay(day.id)} style={{ background:"#450a0a", border:"none", borderRadius:8, padding:"6px 8px", cursor:"pointer", fontSize:14 }}>🗑️</button>
-                </div>
-              </div>
-
-              {expanded && (day.exercises||[]).length>0 && (
-                <div style={{ marginTop:10, display:"flex", flexDirection:"column", gap:5 }}>
-                  {day.exercises.map((ex,i)=>(
-                    <div key={i} style={{ fontSize:13, color:TEXT_P, background:"#0a0a0a", border:`1px solid ${BORDER}`, borderRadius:10, padding:"8px 12px", display:"flex", justifyContent:"space-between" }}>
-                      <span>{ex.name}</span>
-                      <span style={{ fontWeight:700, color:ACCENT }}>{ex.sets}×{ex.reps}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {isToday && (
-                <button onClick={()=>markComplete(day)} disabled={done} className="btn btn-p" style={{ marginTop:12, background:done?"#059669":ACCENT }}>
-                  {done ? "✓ Completed! +60 XP" : "Mark Complete →"}
-                </button>
-              )}
-            </div>
-          );
-        })
-      )}
-
-      {(showAdd||editD) && <WorkoutModal day={editD} onClose={()=>{setShowAdd(false);setEditD(null)}} onSave={d=>{saveDay(d);setShowAdd(false);setEditD(null)}} />}
     </div>
   );
 }
 
-function WorkoutModal({ day, onClose, onSave }) {
-  const [f, setF] = useState(day || { name:"", days:[], exercises:[] });
-  const [ex, setEx] = useState({ name:"", sets:"3", reps:"10" });
-  const s = (k,v) => setF(x=>({...x,[k]:v}));
-
-  const addEx = () => {
-    if (!ex.name.trim()) return;
-    s("exercises",[...f.exercises,{name:ex.name,sets:ex.sets,reps:ex.reps}]);
-    setEx({name:"",sets:"3",reps:"10"});
-  };
-
-  return (
-    <Modal title={day?"Edit Workout":"Add Workout Day"} onClose={onClose}>
-      <input className="inp" placeholder="Workout name (e.g. Push Day)..." value={f.name} onChange={e=>s("name",e.target.value)} style={{ marginBottom:12 }} />
-      <label style={{ fontSize:12, fontWeight:700, color:TEXT_S, display:"block", marginBottom:8 }}>Training Days</label>
-      <div style={{ display:"flex", gap:6, flexWrap:"wrap", marginBottom:16 }}>
-        {DAYS_S.map((d,i)=>{
-          const on=(f.days||[]).includes(i);
-          return <button key={i} onClick={()=>s("days",on?(f.days).filter(x=>x!==i):[...(f.days||[]),i])} style={{ padding:"7px 11px",borderRadius:10,border:`2px solid ${on?ACCENT:BORDER}`,background:on?"#1e1b4b":"#000",color:on?ACCENT:TEXT_S,fontWeight:700,fontSize:12,cursor:"pointer" }}>{d}</button>;
-        })}
-      </div>
-      <label style={{ fontSize:12, fontWeight:700, color:TEXT_S, display:"block", marginBottom:8 }}>Exercises</label>
-      {f.exercises.map((e,i)=>(
-        <div key={i} style={{ display:"flex",justifyContent:"space-between",alignItems:"center",background:"#0a0a0a",border:`1px solid ${BORDER}`,borderRadius:10,padding:"8px 12px",marginBottom:6 }}>
-          <span style={{ fontSize:13, color:TEXT_P }}>{e.name} <span style={{ color:ACCENT,fontWeight:700 }}>{e.sets}×{e.reps}</span></span>
-          <button onClick={()=>s("exercises",f.exercises.filter((_,j)=>j!==i))} style={{ background:"none",border:"none",color:"#ef4444",cursor:"pointer",fontSize:16,fontWeight:700 }}>×</button>
-        </div>
-      ))}
-      <div style={{ display:"grid", gridTemplateColumns:"2fr 1fr 1fr", gap:8, marginBottom:10 }}>
-        <input className="inp" placeholder="Exercise" value={ex.name} onChange={e=>setEx(v=>({...v,name:e.target.value}))} />
-        <input className="inp" placeholder="Sets" type="number" value={ex.sets} onChange={e=>setEx(v=>({...v,sets:e.target.value}))} />
-        <input className="inp" placeholder="Reps" type="number" value={ex.reps} onChange={e=>setEx(v=>({...v,reps:e.target.value}))} />
-      </div>
-      <button onClick={addEx} style={{ width:"100%",background:"none",border:`1.5px dashed #444`,color:TEXT_S,borderRadius:12,padding:"10px",cursor:"pointer",fontWeight:700,fontSize:14,marginBottom:16 }}>
-        + Add Exercise
-      </button>
-      <button className="btn btn-p" disabled={!f.name.trim()||(f.days||[]).length===0} onClick={()=>onSave(f)}>Save Workout</button>
-    </Modal>
-  );
-}
-
-// ─── CAREER TAB (DARK) ────────────────────────────────────────────────────────
-function CareerTab({ appData, setAppData, awardXP }) {
-  const { skills=[], goals=[] } = appData;
-  const [showAddSkill, setShowAddSkill] = useState(false);
-  const [showAddGoal, setShowAddGoal] = useState(false);
-  const [activeTimer, setActiveTimer] = useState(null);
-  const [running, setRunning] = useState(false);
-  const [elapsed, setElapsed] = useState(0);
-  const iRef = useRef(null);
-
-  const startTimer = (skill) => { setActiveTimer(skill); setElapsed(0); setRunning(true); };
-  const stopTimer = () => {
-    setRunning(false);
-    clearInterval(iRef.current);
-    const mins = Math.floor(elapsed / 60);
-    if (activeTimer && mins > 0) {
-      setAppData(prev => ({
-        ...prev,
-        skills: prev.skills.map(s => s.id===activeTimer.id ? {
-          ...s, totalMinutes:(s.totalMinutes||0)+mins, lastStudied:todayStr(),
-          sessionsLog:[...(s.sessionsLog||[]),{date:todayStr(),mins}],
-          streak: s.lastStudied===yesterdayStr()?(s.streak||0)+1:1,
-        } : s)
-      }));
-      awardXP(Math.min(120, mins*2), "Career", activeTimer.streak||0);
-    }
-    setActiveTimer(null); setElapsed(0);
-  };
-
-  useEffect(() => {
-    if (running) iRef.current = setInterval(()=>setElapsed(e=>e+1),1000);
-    else clearInterval(iRef.current);
-    return () => clearInterval(iRef.current);
-  }, [running]);
-
-  const saveSkill = (skill) => {
-    setAppData(prev => ({
-      ...prev,
-      skills: skill.id&&prev.skills.find(s=>s.id===skill.id)
-        ? prev.skills.map(s=>s.id===skill.id?skill:s)
-        : [...prev.skills,{...skill,id:uid(),totalMinutes:0,sessionsLog:[],streak:0}]
-    }));
-  };
-
-  const deleteSkill = (id) => setAppData(prev=>({...prev,skills:prev.skills.filter(s=>s.id!==id)}));
-
-  const saveGoal = (goal) => {
-    setAppData(prev => ({
-      ...prev,
-      goals: goal.id&&prev.goals.find(g=>g.id===goal.id)
-        ? prev.goals.map(g=>g.id===goal.id?goal:g)
-        : [...prev.goals,{...goal,id:uid()}]
-    }));
-  };
-
-  const deleteGoal = (id) => setAppData(prev=>({...prev,goals:prev.goals.filter(g=>g.id!==id)}));
-
-  const toggleMilestone = (goalId, mId) => {
-    const goal = goals.find(g=>g.id===goalId);
-    const m = (goal?.milestones||[]).find(x=>x.id===mId);
-    if (m && !m.done) awardXP(40,"Career",0);
-    setAppData(prev=>({
-      ...prev,
-      goals: prev.goals.map(g=>g.id===goalId?{...g,milestones:g.milestones.map(m=>m.id===mId?{...m,done:!m.done}:m)}:g)
-    }));
-  };
-
-  return (
-    <div style={{ padding:16 }}>
-      {activeTimer && (
-        <div className="card" style={{ padding:20, marginBottom:16, textAlign:"center", background:"#1e1b4b", borderColor: ACCENT }}>
-          <div style={{ fontSize:12, fontWeight:700, color:ACCENT, letterSpacing:1, textTransform:"uppercase", marginBottom:6 }}>Studying</div>
-          <div style={{ fontSize:16, fontWeight:800, color:TEXT_P, marginBottom:4 }}>{activeTimer.name}</div>
-          <div style={{ fontSize:52, fontWeight:900, color:ACCENT, fontVariantNumeric:"tabular-nums", letterSpacing:-2 }}>{fmtTime(elapsed)}</div>
-          <button onClick={stopTimer} className="btn" style={{ background:"#ef4444", color:"white", width:"auto", marginTop:12, padding:"11px 32px" }}>Stop & Save XP</button>
-        </div>
-      )}
-
-      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:12 }}>
-        <h2 style={{ fontSize:16, fontWeight:800, color:TEXT_P }}>Skills</h2>
-        <button className="btn btn-g" style={{ fontSize:12, padding:"8px 14px", borderRadius:10 }} onClick={()=>setShowAddSkill(true)}>+ Add Skill</button>
-      </div>
-
-      {skills.length===0 ? (
-        <div className="card" style={{ padding:32, textAlign:"center", marginBottom:16 }}>
-          <div style={{ fontSize:32, marginBottom:8 }}>📚</div>
-          <p style={{ color:TEXT_S, fontSize:14 }}>No skills tracked yet.</p>
-        </div>
-      ) : (
-        skills.map(skill => {
-          const todayMins = (skill.sessionsLog||[]).filter(s=>s.date===todayStr()).reduce((a,b)=>a+b.mins,0);
-          const goal = skill.dailyGoalMinutes||30;
-          const prog = Math.min(100,(todayMins/goal)*100);
-          const totalH = ((skill.totalMinutes||0)/60).toFixed(1);
-          const isActive = activeTimer?.id===skill.id;
-          return (
-            <div key={skill.id} className="card" style={{ padding:16, marginBottom:10 }}>
-              <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:10 }}>
-                <div>
-                  <div style={{ fontWeight:800, fontSize:15, color:TEXT_P }}>{skill.name}</div>
-                  <div style={{ fontSize:11, color:TEXT_S, marginTop:2 }}>{totalH}h total · {goal}min/day goal</div>
-                </div>
-                <div style={{ display:"flex", gap:5, alignItems:"center" }}>
-                  <span style={{ fontSize:13, fontWeight:700, color:prog>=100?"#10b981":ACCENT }}>{todayMins}/{goal}m</span>
-                  <button onClick={()=>deleteSkill(skill.id)} style={{ background:"#450a0a",border:"none",borderRadius:8,padding:"5px 7px",cursor:"pointer",fontSize:13 }}>🗑️</button>
-                </div>
-              </div>
-              <XPBar xp={prog} max={100} color={prog>=100?"#10b981":ACCENT} h={7} />
-              {!activeTimer && (
-                <button className="btn btn-p" style={{ marginTop:10, fontSize:13, padding:"9px" }} onClick={()=>startTimer(skill)}>▶ Start Timer</button>
-              )}
-            </div>
-          );
-        })
-      )}
-
-      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:12, marginTop:8 }}>
-        <h2 style={{ fontSize:16, fontWeight:800, color:TEXT_P }}>Long-term Goals</h2>
-        <button className="btn btn-g" style={{ fontSize:12, padding:"8px 14px", borderRadius:10 }} onClick={()=>setShowAddGoal(true)}>+ Add Goal</button>
-      </div>
-
-      {goals.map(goal => {
-          const done = (goal.milestones||[]).filter(m=>m.done).length;
-          const total = (goal.milestones||[]).length;
-          const prog = total>0?(done/total)*100:0;
-          return (
-            <div key={goal.id} className="card" style={{ padding:16, marginBottom:10 }}>
-              <div style={{ display:"flex", justifyContent:"space-between" }}>
-                <div>
-                  <div style={{ fontWeight:800, fontSize:15, color:TEXT_P }}>{goal.title}</div>
-                  {goal.deadline && <div style={{ fontSize:11, color:TEXT_S, marginTop:2 }}>📅 {goal.deadline}</div>}
-                </div>
-                <button onClick={()=>deleteGoal(goal.id)} style={{ background:"#450a0a",border:"none",borderRadius:8,padding:"5px 7px",cursor:"pointer",fontSize:13 }}>🗑️</button>
-              </div>
-              <div style={{ margin:"10px 0 6px" }}><XPBar xp={prog} max={100} color="#10b981" h={7} /></div>
-              {(goal.milestones||[]).map(m=>(
-                <div key={m.id} onClick={()=>toggleMilestone(goal.id,m.id)} style={{ display:"flex", alignItems:"center", gap:10, padding:"8px 0", borderTop:`1px solid ${BORDER}`, cursor:"pointer" }}>
-                  <div style={{ width:22, height:22, borderRadius:7, border:`2px solid ${m.done?"#10b981":"#333"}`, background:m.done?"#10b981":"transparent", display:"flex", alignItems:"center", justifyContent:"center" }}>
-                    {m.done && <span style={{ color:"white", fontSize:12 }}>✓</span>}
-                  </div>
-                  <span style={{ fontSize:13, color:m.done?TEXT_S:TEXT_P }}>{m.text}</span>
-                </div>
-              ))}
-            </div>
-          );
-      })}
-
-      {showAddSkill && <SkillModal onClose={()=>setShowAddSkill(false)} onSave={s=>{saveSkill(s);setShowAddSkill(false)}} />}
-      {showAddGoal && <GoalModal onClose={()=>setShowAddGoal(false)} onSave={g=>{saveGoal(g);setShowAddGoal(false)}} />}
-    </div>
-  );
-}
-
-function SkillModal({ onClose, onSave }) {
-  const [f, setF] = useState({ name:"", dailyGoalMinutes:30 });
-  return (
-    <Modal title="Add Skill" onClose={onClose}>
-      <input className="inp" placeholder="Skill name..." value={f.name} onChange={e=>setF(x=>({...x,name:e.target.value}))} style={{ marginBottom:12 }} />
-      <label style={{ fontSize:12, color:TEXT_S, fontWeight:700, display:"block", marginBottom:6 }}>Daily goal (minutes)</label>
-      <input className="inp" type="number" value={f.dailyGoalMinutes} onChange={e=>setF(x=>({...x,dailyGoalMinutes:+e.target.value}))} style={{ marginBottom:16 }} />
-      <button className="btn btn-p" disabled={!f.name.trim()} onClick={()=>onSave(f)}>Add Skill</button>
-    </Modal>
-  );
-}
-
-function GoalModal({ onClose, onSave }) {
-  const [f, setF] = useState({ title:"", deadline:"", milestones:[] });
-  const [mText, setMText] = useState("");
-  const addM = () => { if(!mText.trim()) return; setF(x=>({...x,milestones:[...x.milestones,{id:uid(),text:mText,done:false}]})); setMText(""); };
-  return (
-    <Modal title="Add Goal" onClose={onClose}>
-      <input className="inp" placeholder="Goal title..." value={f.title} onChange={e=>setF(x=>({...x,title:e.target.value}))} style={{ marginBottom:12 }} />
-      <input className="inp" placeholder="Deadline..." value={f.deadline} onChange={e=>setF(x=>({...x,deadline:e.target.value}))} style={{ marginBottom:12 }} />
-      {f.milestones.map((m,i)=>(
-        <div key={i} style={{ display:"flex", background:"#0a0a0a", border:`1px solid ${BORDER}`, borderRadius:10, padding:"8px 12px", marginBottom:6, fontSize:13 }}>{m.text}</div>
-      ))}
-      <div style={{ display:"flex", gap:8, marginBottom:16 }}>
-        <input className="inp" placeholder="Milestone..." value={mText} onChange={e=>setMText(e.target.value)} />
-        <button onClick={addM} className="btn btn-g">+ Add</button>
-      </div>
-      <button className="btn btn-p" disabled={!f.title.trim()} onClick={()=>onSave(f)}>Add Goal</button>
-    </Modal>
-  );
-}
-
-// ─── PEOPLE TAB (DARK) ────────────────────────────────────────────────────────
-function PeopleTab({ appData, setAppData, awardXP }) {
-  const { people=[] } = appData;
-  const [showAdd, setShowAdd] = useState(false);
-  const [selectedId, setSelectedId] = useState(null);
-  const [logNote, setLogNote] = useState("");
-
-  const nudge = people.find(p => {
-    const freq = p.frequency || 7;
-    const last = p.lastContacted ? new Date(p.lastContacted).getTime() : 0;
-    return Math.floor((Date.now()-last)/86400000) >= freq;
-  });
-
-  const logTime = (person) => {
-    if (!logNote.trim()) return;
-    const t = todayStr();
-    const newStreak = person.lastContacted===yesterdayStr()?(person.streak||0)+1:1;
-    setAppData(prev=>({
-      ...prev,
-      people: prev.people.map(p=>p.id===person.id?{
-        ...p, lastContacted:t, streak:newStreak,
-        qualityLog:[...(p.qualityLog||[]),{date:t,note:logNote}],
-      }:p)
-    }));
-    awardXP(30,"Relationships",newStreak);
-    setLogNote(""); setSelectedId(null);
-  };
-
-  const savePerson = (person) => {
-    setAppData(prev=>({
-      ...prev,
-      people: person.id&&prev.people.find(p=>p.id===person.id)
-        ? prev.people.map(p=>p.id===person.id?person:p)
-        : [...prev.people,{...person,id:uid(),streak:0,qualityLog:[]}]
-    }));
-  };
-
-  const deletePerson = (id) => setAppData(prev=>({...prev,people:prev.people.filter(p=>p.id!==id)}));
-
-  const AVATAR_COLORS = [
-    ["#1e1b4b","#6366f1"],["#45062e","#ec4899"],["#172554","#3b82f6"],
-    ["#064e3b","#10b981"],["#422006","#f59e0b"],["#450a0a","#ef4444"]
-  ];
-
-  return (
-    <div style={{ padding:16 }}>
-      {nudge && (
-        <div className="card" style={{ padding:16, marginBottom:16, background:"#422006", border:"1px solid #f59e0b" }}>
-          <div style={{ fontSize:11, fontWeight:800, color:"#fbbf24", letterSpacing:1, textTransform:"uppercase", marginBottom:4 }}>Today's Nudge 💌</div>
-          <div style={{ fontWeight:800, fontSize:16, color:TEXT_P }}>{nudge.name}</div>
-        </div>
-      )}
-
-      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:12 }}>
-        <h2 style={{ fontSize:16, fontWeight:800, color:TEXT_P }}>Your People</h2>
-        <button className="btn btn-g" style={{ fontSize:12, padding:"8px 14px", borderRadius:10 }} onClick={()=>setShowAdd(true)}>+ Add Person</button>
-      </div>
-
-      {people.map(person => {
-          const daysSince = person.lastContacted ? Math.floor((Date.now()-new Date(person.lastContacted).getTime())/86400000) : null;
-          const lastTxt = daysSince===null?"Never":daysSince===0?"Today":daysSince===1?"Yesterday":`${daysSince}d ago`;
-          const ci = person.name.charCodeAt(0)%AVATAR_COLORS.length;
-          const [bg, fg] = AVATAR_COLORS[ci];
-          const initials = person.name.split(" ").map(w=>w[0]).join("").toUpperCase().slice(0,2);
-          const open = selectedId===person.id;
-
-          return (
-            <div key={person.id} className="card" style={{ padding:16, marginBottom:10 }}>
-              <div style={{ display:"flex", alignItems:"center", gap:12 }}>
-                <div style={{ width:46, height:46, borderRadius:"50%", background:bg, display:"flex", alignItems:"center", justifyContent:"center", fontWeight:800, fontSize:16, color:fg }}>{initials}</div>
-                <div style={{ flex:1 }}>
-                  <div style={{ fontWeight:800, fontSize:15, color:TEXT_P }}>{person.name}</div>
-                  <div style={{ fontSize:12, color:TEXT_S }}>{person.type} · {lastTxt}</div>
-                </div>
-                <button onClick={()=>deletePerson(person.id)} style={{ background:"#450a0a",border:"none",borderRadius:8,padding:"5px 8px",cursor:"pointer",fontSize:13 }}>🗑️</button>
-              </div>
-
-              {open ? (
-                <div style={{ marginTop:12 }}>
-                  <input className="inp" placeholder="What did you do?..." value={logNote} onChange={e=>setLogNote(e.target.value)} style={{ marginBottom:8 }} autoFocus />
-                  <div style={{ display:"flex", gap:8 }}>
-                    <button onClick={()=>logTime(person)} className="btn btn-p" style={{ flex:1 }}>Log +30 XP</button>
-                    <button onClick={()=>setSelectedId(null)} className="btn btn-g" style={{ flex:1 }}>Cancel</button>
-                  </div>
-                </div>
-              ) : (
-                <button onClick={()=>setSelectedId(person.id)} style={{ width:"100%", marginTop:10, background:"#1e1b4b", color:ACCENT, border:"none", borderRadius:12, padding:"9px", fontWeight:700 }}>+ Log Quality Time</button>
-              )}
-            </div>
-          );
-      })}
-
-      {showAdd && <PersonModal onClose={()=>setShowAdd(false)} onSave={p=>{savePerson(p);setShowAdd(false)}} />}
-    </div>
-  );
-}
-
-function PersonModal({ onClose, onSave }) {
-  const [f, setF] = useState({ name:"", type:"Friend", frequency:7 });
-  return (
-    <Modal title="Add Person" onClose={onClose}>
-      <input className="inp" placeholder="Name..." value={f.name} onChange={e=>setF(x=>({...x,name:e.target.value}))} style={{ marginBottom:12 }} />
-      <select className="inp" value={f.type} onChange={e=>setF(x=>({...x,type:e.target.value}))} style={{ marginBottom:16 }}>
-        {REL_TYPES.map(t=><option key={t}>{t}</option>)}
-      </select>
-      <button className="btn btn-p" disabled={!f.name.trim()} onClick={()=>onSave(f)}>Add Person</button>
-    </Modal>
-  );
-}
-
-// ─── STATS TAB (DARK) ─────────────────────────────────────────────────────────
-function StatsTab({ appData }) {
-  const { character, habits=[] } = appData;
-  const { stats, xpLog=[], totalXpEarned=0 } = character;
-  const rank = getRank(character.level);
-
-  const radarData = [
-    { stat:"STR", val:stats.str, full:50 },
-    { stat:"INT", val:stats.int, full:50 },
-    { stat:"CHM", val:stats.chm, full:50 },
-    { stat:"FOC", val:stats.foc, full:50 },
-  ];
-
-  const last7 = Array.from({length:7},(_,i)=>{
-    const dt = new Date(Date.now()-i*86400000).toDateString();
-    const entry = { day: DAYS_S[new Date(Date.now()-i*86400000).getDay()===0?6:new Date(Date.now()-i*86400000).getDay()-1] };
-    PILLARS.forEach(p => { entry[p] = (xpLog||[]).filter(l=>l.date===dt&&l.pillar===p).reduce((a,b)=>a+b.amount,0); });
-    return entry;
-  }).reverse();
-
-  return (
-    <div style={{ padding:16 }}>
-      <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:10, marginBottom:16 }}>
-        {[
-          { label:"Total XP", val: (totalXpEarned||0).toLocaleString(), color:ACCENT },
-          { label:"Level",   val: character.level, color:"#7c3aed" },
-          { label:"Rank",    val: rank.name, color:rank.color },
-          { label:"Habits",  val: habits.length, color:"#10b981" },
-        ].map(({ label, val, color }) => (
-          <div key={label} className="card" style={{ padding:"14px 16px" }}>
-            <div style={{ fontSize:10, color:TEXT_S, fontWeight:700, letterSpacing:0.7, textTransform:"uppercase", marginBottom:5 }}>{label}</div>
-            <div style={{ fontSize:24, fontWeight:900, color }}>{val}</div>
-          </div>
-        ))}
-      </div>
-
-      <div className="card" style={{ padding:16, marginBottom:14 }}>
-        <h3 style={{ fontSize:14, fontWeight:800, marginBottom:4, color:TEXT_P }}>Stat Radar</h3>
-        <ResponsiveContainer width="100%" height={200}>
-          <RadarChart data={radarData}>
-            <PolarGrid stroke="#333" />
-            <PolarAngleAxis dataKey="stat" tick={{ fontSize:12, fontWeight:700, fill:ACCENT }} />
-            <Radar dataKey="val" stroke={ACCENT} fill={ACCENT} fillOpacity={0.4} strokeWidth={2} />
-          </RadarChart>
-        </ResponsiveContainer>
-      </div>
-
-      <div className="card" style={{ padding:16, marginBottom:14 }}>
-        <h3 style={{ fontSize:14, fontWeight:800, marginBottom:12, color:TEXT_P }}>XP This Week</h3>
-        <ResponsiveContainer width="100%" height={160}>
-          <BarChart data={last7} barSize={7} margin={{ left:-20 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#262626" vertical={false} />
-            <XAxis dataKey="day" tick={{ fontSize:10, fill:TEXT_S }} axisLine={false} tickLine={false} />
-            <YAxis tick={{ fontSize:10, fill:TEXT_S }} axisLine={false} tickLine={false} />
-            <Tooltip contentStyle={{ background:"#121212", border:`1px solid ${BORDER}`, borderRadius:12 }} />
-            {PILLARS.map(p=>(
-              <Bar key={p} dataKey={p} stackId="x" fill={P_COLOR[p]} radius={[0,0,0,0]} />
-            ))}
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
-
-      <div className="card" style={{ padding:16 }}>
-        <h3 style={{ fontSize:14, fontWeight:800, marginBottom:12, color:TEXT_P }}>Stat Levels</h3>
-        {Object.entries(S_LABEL).map(([key, label]) => {
-          const color = P_COLOR[S_PILAR[key]];
-          const lvl = character.stats[key];
-          const sxp = character.statXp[key]||0;
-          return (
-            <div key={key} style={{ marginBottom:12 }}>
-              <div style={{ display:"flex", justifyContent:"space-between", marginBottom:5 }}>
-                <span style={{ fontSize:13, fontWeight:700, color }}>{label}</span>
-                <span style={{ fontSize:12, color:TEXT_S }}>Lv.{lvl}</span>
-              </div>
-              <XPBar xp={sxp} max={xpForStat(lvl)} color={color} h={6} />
-            </div>
-          );
-        })}
-      </div>
-      <div style={{ height:16 }} />
-    </div>
-  );
-}
-
-// ─── SETTINGS (DARK) ──────────────────────────────────────────────────────────
-function SettingsModal({ appData, setAppData, onClose }) {
-  const [name, setName] = useState(appData.character.name);
-  const [cls, setCls] = useState(appData.character.class);
-  const [confirm, setConfirm] = useState(false);
-
-  const save = () => {
-    setAppData(prev=>({...prev,character:{...prev.character,name,class:cls}}));
-    onClose();
-  };
-
-  const reset = () => { localStorage.removeItem(KEY); window.location.reload(); };
-
-  return (
-    <Modal title="Settings" onClose={onClose}>
-      <label style={{ fontSize:12, fontWeight:700, color:TEXT_S, display:"block", marginBottom:6 }}>Character Name</label>
-      <input className="inp" value={name} onChange={e=>setName(e.target.value)} style={{ marginBottom:12 }} />
-      <label style={{ fontSize:12, fontWeight:700, color:TEXT_S, display:"block", marginBottom:6 }}>Class</label>
-      <select className="inp" value={cls} onChange={e=>setCls(e.target.value)} style={{ marginBottom:20 }}>
-        {Object.keys(CLASSES).map(c=><option key={c}>{c}</option>)}
-      </select>
-      <button className="btn btn-p" style={{ marginBottom:12 }} onClick={save}>Save Changes</button>
-      {!confirm ? (
-        <button onClick={()=>setConfirm(true)} style={{ width:"100%", background:"#450a0a", color:"#ef4444", border:"1px solid #ef4444", borderRadius:14, padding:13, fontWeight:700 }}>🔄 Reset All Data</button>
-      ) : (
-        <div style={{ display:"flex", gap:8 }}>
-          <button onClick={reset} className="btn" style={{ flex:1, background:"#ef4444", color:"white" }}>Confirm</button>
-          <button onClick={()=>setConfirm(false)} className="btn btn-g" style={{ flex:1 }}>Cancel</button>
-        </div>
-      )}
-    </Modal>
-  );
-}
-
-// ─── MAIN APP (BLACK THEME) ───────────────────────────────────────────────────
+// ─── MAIN APP ─────────────────────────────────────────────────────────────────
 export default function App() {
   const [appData, setAppData] = useState(() => loadData());
   const [tab, setTab] = useState("home");
   const [levelUp, setLevelUp] = useState(null);
-  const [xpFloat, setXpFloat] = useState(null);
-  const [showSettings, setShowSettings] = useState(false);
-
-  const updateAppData = useCallback((updater) => {
-    setAppData(prev => {
-      const next = typeof updater === "function" ? updater(prev) : updater;
-      saveData(next);
-      return next;
-    });
-  }, []);
-
-  const awardXP = useCallback((baseAmount, pillar, streak = 0) => {
-    const mult = getMult(streak);
-    const amount = Math.round(baseAmount * mult);
-    setXpFloat(`+${amount} XP`);
-    setTimeout(() => setXpFloat(null), 2200);
-
-    setAppData(prev => {
-      if (!prev?.character) return prev;
-      let char = { ...prev.character };
-      const sk = P_STAT[pillar] || "foc";
-      let statXp = { ...char.statXp };
-      statXp[sk] = (statXp[sk]||0) + amount;
-      let stats = { ...char.stats };
-      if (statXp[sk] >= xpForStat(stats[sk]) && stats[sk] < 50) {
-        stats[sk]++;
-        statXp[sk] = 0;
-      }
-      let xp = char.xp + amount;
-      let level = char.level;
-      let leveled = false;
-      while (xp >= xpForLevel(level)) {
-        xp -= xpForLevel(level);
-        level++;
-        leveled = true;
-      }
-      if (leveled) {
-        const q = QUOTES[Math.floor(Math.random()*QUOTES.length)];
-        setTimeout(() => setLevelUp({ level, rank:getRank(level), quote:q }), 500);
-      }
-      const xpLog = [...(char.xpLog||[]), { date:todayStr(), amount, pillar }].slice(-300);
-      const next = { ...prev, character:{ ...char, xp, level, stats, statXp, totalXpEarned:(char.totalXpEarned||0)+amount, xpLog } };
-      saveData(next);
-      return next;
-    });
-  }, []);
 
   useEffect(() => {
-    if (!appData?.character) return;
-    if (appData.character.lastReset === todayStr()) return;
-    updateAppData(prev => ({
-      ...prev,
-      character: { ...prev.character, lastReset:todayStr() }
-    }));
-  }, [appData?.character?.lastReset]);
+    // Inject styles only after component mounts to prevent render blocking
+    const styleTag = document.createElement('style');
+    styleTag.innerHTML = GS;
+    document.head.appendChild(styleTag);
+    return () => document.head.removeChild(styleTag);
+  }, []);
+
+  const awardXP = useCallback((amount, pillar, streak) => {
+    setAppData(prev => {
+      if (!prev) return prev;
+      let char = { ...prev.character };
+      char.xp += amount;
+      if (char.xp >= xpForLevel(char.level)) {
+        char.xp -= xpForLevel(char.level);
+        char.level++;
+        setTimeout(() => setLevelUp({ level: char.level }), 500);
+      }
+      const next = { ...prev, character: char };
+      saveData(next);
+      return next;
+    });
+  }, []);
 
   if (!appData) {
-    return (
-      <>
-        <style>{GS}</style>
-        <CharacterCreation onCreate={char => {
-          const d = { character:char, habits:[], workoutDays:[], skills:[], goals:[], people:[] };
-          saveData(d);
-          setAppData(d);
-        }} />
-      </>
-    );
+    return <CharacterCreation onCreate={char => {
+      const d = { character:char, habits:[], workoutDays:[], skills:[], goals:[], people:[] };
+      saveData(d);
+      setAppData(d);
+    }} />;
   }
 
-  const TABS = [
-    { id:"home",    icon:"🏠", label:"Home" },
-    { id:"fitness", icon:"💪", label:"Fitness" },
-    { id:"career",  icon:"📚", label:"Career" },
-    { id:"people",  icon:"❤️", label:"People" },
-    { id:"stats",   icon:"📊", label:"Stats" },
-  ];
-
   return (
-    <>
-      <style>{GS}</style>
-      <div style={{ maxWidth:430, margin:"0 auto", minHeight:"100vh", background:BG, position:"relative", paddingBottom:88 }}>
-        {xpFloat && (
-          <div style={{ position:"fixed", top:"14%", left:"50%", zIndex:500, pointerEvents:"none", animation:"floatXP 2.2s ease forwards", background:ACCENT, color:"white", fontWeight:800, fontSize:17, padding:"8px 22px", borderRadius:30 }}>
-            {xpFloat}
-          </div>
-        )}
-        {levelUp && <LevelUpModal data={levelUp} onClose={()=>setLevelUp(null)} />}
-        {showSettings && <SettingsModal appData={appData} setAppData={updateAppData} onClose={()=>setShowSettings(false)} />}
-        <div style={{ padding:"16px 20px 0", display:"flex", justifyContent:"space-between", alignItems:"center" }}>
-          <div style={{ fontWeight:900, fontSize:22, color:ACCENT }}>ASCEND</div>
-          <button onClick={()=>setShowSettings(true)} style={{ background:"none", border:"none", fontSize:20, cursor:"pointer", opacity:0.5 }}>⚙️</button>
-        </div>
-        {tab==="home"    && <HomeTab    appData={appData} setAppData={updateAppData} awardXP={awardXP} />}
-        {tab==="fitness" && <FitnessTab appData={appData} setAppData={updateAppData} awardXP={awardXP} />}
-        {tab==="career"  && <CareerTab  appData={appData} setAppData={updateAppData} awardXP={awardXP} />}
-        {tab==="people"  && <PeopleTab  appData={appData} setAppData={updateAppData} awardXP={awardXP} />}
-        {tab==="stats"   && <StatsTab   appData={appData} />}
-        <div style={{ position:"fixed", bottom:0, left:"50%", transform:"translateX(-50%)", width:"100%", maxWidth:430, background:"rgba(0,0,0,0.9)", backdropFilter:"blur(12px)", borderTop:`1px solid ${BORDER}`, display:"flex", zIndex:100, paddingBottom:"env(safe-area-inset-bottom,0px)" }}>
-          {TABS.map(t => {
-            const active = tab===t.id;
-            return (
-              <button key={t.id} onClick={()=>setTab(t.id)} style={{ flex:1, background:"none", border:"none", padding:"12px 0", display:"flex", flexDirection:"column", alignItems:"center", gap:2 }}>
-                <span style={{ fontSize:active?20:18 }}>{t.icon}</span>
-                <span style={{ fontSize:10, fontWeight:active?800:400, color:active?ACCENT:TEXT_S }}>{t.label}</span>
-              </button>
-            );
-          })}
-        </div>
+    <div style={{ maxWidth:430, margin:"0 auto", minHeight:"100vh", background:BG, paddingBottom:80 }}>
+      {levelUp && <LevelUpModal data={levelUp} onClose={()=>setLevelUp(null)} />}
+      
+      <div style={{ padding:20, display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+        <div style={{ fontWeight:900, fontSize:22, color:ACCENT }}>ASCEND</div>
+        <button onClick={()=>{localStorage.removeItem(KEY); window.location.reload()}} style={{ opacity:0.3 }}>Reset</button>
       </div>
-    </>
+
+      {tab==="home" && <HomeTab appData={appData} setAppData={setAppData} awardXP={awardXP} />}
+      {tab==="stats" && <StatsTab appData={appData} />}
+
+      <div style={{ position:"fixed", bottom:0, width:"100%", maxWidth:430, background:"white", display:"flex", borderTop:"1px solid #eee" }}>
+        <button onClick={()=>setTab("home")} style={{ flex:1, padding:15, background:tab==="home"?BG:"none", border:"none" }}>🏠 Home</button>
+        <button onClick={()=>setTab("stats")} style={{ flex:1, padding:15, background:tab==="stats"?BG:"none", border:"none" }}>📊 Stats</button>
+      </div>
+    </div>
   );
 }
