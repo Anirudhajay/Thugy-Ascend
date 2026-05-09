@@ -5,10 +5,10 @@ import {
   ResponsiveContainer, CartesianGrid,
 } from "recharts";
 
-// ─── CONSTANTS ────────────────────────────────────────────────────────────────
-const ACCENT = "#4F46E5";
-const BG = "#F5F5FF";
-const CARD = "#FFFFFF";
+// ─── CONSTANTS (Updated for Black Theme) ──────────────────
+const ACCENT = "#4F46E5"; 
+const BG = "#000000";     // Pure Black Background
+const CARD = "#121212";   // Dark Grey Cards
 
 const CLASSES = {
   Warrior: { icon: "⚔️", bonus: "str", desc: "Gym-focused · +2 STR" },
