@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>ASCEND RPG</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/recharts/umd/Recharts.js"></script>
+    
+    <style>
+        /* DEEP BLACK THEME OVERRIDES */
+        :root {
+            --accent: #4F46E5; /* Your Indigo Accent */
+            --bg: #000000;
+            --card: #121212;
+            --text: #ffffff;
+            --border: #262626;
+        }
+        body { 
+            background: var(--bg) !important; 
+            color: var(--text) !important;
+            margin: 0; padding: 0;
+        }
+        /* Force Black Theme on ASCEND Components */
+        .card { 
+            background: var(--card) !important; 
+            border: 1px solid var(--border) !important;
+            color: var(--text) !important;
+        }
+        input, select {
+            background: #1a1a1a !important;
+            color: white !important;
+            border: 1px solid var(--border) !important;
+        }
+        /* Adjusting existing ASCEND CSS for Black Theme */
+        .btn-g { background: #1a1a1a !important; color: white !important; border-color: var(--border) !important; }
+        .inp { background: #1a1a1a !important; color: white !important; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    <script type="text/babel">
+        // 1. COPY EVERYTHING FROM YOUR ASCEND.jsx FILE
+        // 2. PASTE IT HERE
+        // 3. IMPORTANT: Delete the 'import' lines at the very top of your JSX file
+        //    (React, Recharts, etc. are already loaded by the script tags above).
+
+        const { useState, useEffect, useRef, useCallback } = React;
+        const { RadarChart, Radar, PolarGrid, PolarAngleAxis, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } = Recharts;
+
+        // [PASTE YOUR JSX CONTENT HERE]
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
