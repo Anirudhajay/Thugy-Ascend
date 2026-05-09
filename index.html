@@ -8,62 +8,32 @@
     <meta name="theme-color" content="#000000">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://unpkg.com/recharts/umd/Recharts.js"></script>
 
     <style>
-        /* GLOBAL DARK OVERRIDES */
-        :root { 
-            --accent: #4F46E5; 
-            --bg: #000000; 
-            --card: #121212; 
-            --text: #ffffff; 
-            --border: #262626; 
-        }
-        body { 
-            background-color: #000000 !important; 
-            color: #ffffff !important; 
-            margin: 0; 
-            font-family: 'Outfit', sans-serif;
-        }
-        /* This forces all white areas in your JSX to become Black */
-        div[style*="background"] { 
-            background-color: #000000 !important; 
-            color: white !important; 
-        }
-        div[style*="background: white"], 
-        div[style*="background:#FFFFFF"],
-        div[style*="background: rgba(255, 255, 255"] { 
-            background: #121212 !important; 
-            border-color: #262626 !important;
-        }
-        /* Bottom Nav Fix */
-        div[style*="bottom: 0"] {
-            background: rgba(18, 18, 18, 0.95) !important;
-            backdrop-filter: blur(10px) !important;
-            border-top: 1px solid #262626 !important;
-        }
+        :root { --accent: #4F46E5; --bg: #000000; --card: #121212; --text: #ffffff; --border: #262626; }
+        body { background-color: #000000 !important; color: #ffffff !important; margin: 0; font-family: 'Outfit', sans-serif; overflow-x: hidden; }
+        #root { height: 100vh; width: 100vw; background: #000000; }
+        
+        /* Persistent Black Theme */
+        .card, div[style*="background"] { background-color: #000000 !important; color: white !important; border-color: #262626 !important; }
+        input, select { background: #1a1a1a !important; color: white !important; border: 1px solid #333 !important; }
         button { color: white !important; }
+        nav { background: rgba(18, 18, 18, 0.95) !important; border-top: 1px solid #262626 !important; }
     </style>
 </head>
 <body>
     <div id="root"></div>
-
-    <script type="text/babel" src="ASCEND.jsx"></script>
-
-    <script>
-        // Register the Service Worker for Offline Mode
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js')
-                    .then(reg => console.log('Offline system active'))
-                    .catch(err => console.log('Offline system failed', err));
-            });
-        }
+    <script type="text/babel">
+        // Map global variables for the JSX file
+        const { useState, useEffect, useRef, useCallback } = React;
+        const { RadarChart, Radar, PolarGrid, PolarAngleAxis, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, LineChart, Line } = Recharts;
     </script>
+    <script type="text/babel" src="ASCEND.jsx"></script>
 </body>
 </html>
