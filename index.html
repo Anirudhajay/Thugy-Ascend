@@ -4,56 +4,66 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>ASCEND RPG</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#000000">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://unpkg.com/recharts/umd/Recharts.js"></script>
-    
+
     <style>
-        /* DEEP BLACK THEME OVERRIDES */
-        :root {
-            --accent: #4F46E5; /* Your Indigo Accent */
-            --bg: #000000;
-            --card: #121212;
-            --text: #ffffff;
-            --border: #262626;
+        /* GLOBAL DARK OVERRIDES */
+        :root { 
+            --accent: #4F46E5; 
+            --bg: #000000; 
+            --card: #121212; 
+            --text: #ffffff; 
+            --border: #262626; 
         }
         body { 
-            background: var(--bg) !important; 
-            color: var(--text) !important;
-            margin: 0; padding: 0;
+            background-color: #000000 !important; 
+            color: #ffffff !important; 
+            margin: 0; 
+            font-family: 'Outfit', sans-serif;
         }
-        /* Force Black Theme on ASCEND Components */
-        .card { 
-            background: var(--card) !important; 
-            border: 1px solid var(--border) !important;
-            color: var(--text) !important;
+        /* This forces all white areas in your JSX to become Black */
+        div[style*="background"] { 
+            background-color: #000000 !important; 
+            color: white !important; 
         }
-        input, select {
-            background: #1a1a1a !important;
-            color: white !important;
-            border: 1px solid var(--border) !important;
+        div[style*="background: white"], 
+        div[style*="background:#FFFFFF"],
+        div[style*="background: rgba(255, 255, 255"] { 
+            background: #121212 !important; 
+            border-color: #262626 !important;
         }
-        /* Adjusting existing ASCEND CSS for Black Theme */
-        .btn-g { background: #1a1a1a !important; color: white !important; border-color: var(--border) !important; }
-        .inp { background: #1a1a1a !important; color: white !important; }
+        /* Bottom Nav Fix */
+        div[style*="bottom: 0"] {
+            background: rgba(18, 18, 18, 0.95) !important;
+            backdrop-filter: blur(10px) !important;
+            border-top: 1px solid #262626 !important;
+        }
+        button { color: white !important; }
     </style>
 </head>
 <body>
     <div id="root"></div>
-    <script type="text/babel">
-        // 1. COPY EVERYTHING FROM YOUR ASCEND.jsx FILE
-        // 2. PASTE IT HERE
-        // 3. IMPORTANT: Delete the 'import' lines at the very top of your JSX file
-        //    (React, Recharts, etc. are already loaded by the script tags above).
 
-        const { useState, useEffect, useRef, useCallback } = React;
-        const { RadarChart, Radar, PolarGrid, PolarAngleAxis, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } = Recharts;
+    <script type="text/babel" src="ASCEND.jsx"></script>
 
-        // [PASTE YOUR JSX CONTENT HERE]
-
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<App />);
+    <script>
+        // Register the Service Worker for Offline Mode
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('Offline system active'))
+                    .catch(err => console.log('Offline system failed', err));
+            });
+        }
     </script>
 </body>
 </html>
